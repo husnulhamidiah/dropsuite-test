@@ -22,3 +22,15 @@ const topHash = uniqHashes.reduce(([acc, hash], item) => {
 }, [1, null])
 
 console.log(topHash)
+
+const grepShasums = execSync(`find ${dirPath} -type f -exec sha1sum {} \\; | grep ${topHash.pop()} `, {
+  encoding: 'utf8',
+  maxBuffer: Infinity
+})
+const finalPath = grepShasums.toString()
+  .split('\n')
+  .filter(Boolean)
+  .map(item => item.substring(40).trim())
+  .pop()
+
+console.log(finalPath)
