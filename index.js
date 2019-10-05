@@ -21,14 +21,24 @@
 
 /**
   * NOTE: THIS SOLUTION WILL ONLY WORKS ON LINUX AND MAC MACHINE SINCE IT USES `find`
-  * and `shasum` command.
+  * AND `shasum` COMMANDS.
   */
 
 import fs from 'fs'
 import { execSync } from 'child_process'
 
 const solution = (dirPath) => {
-  const findCmd = `find ${dirPath} -type f -exec shasum {} \\;`
+  const SHA_SUM = {
+    linux: { alg: 'sha1sum', length: 40 },
+    freebsd: { alg: 'shasum', length: 40 },
+    openbsd: { alg: 'shasum', length: 40 },
+    darwin: { alg: 'shasum', length: 40 }
+  }
+
+  const shasum = SHA_SUM[process.platform]
+  if (!shasum) process.exit(1)
+
+  const findCmd = `find ${dirPath} -type f -exec ${shasum.alg} {} \\;`
 
   /**
    * Execute find command to get all files inside given path and
@@ -39,14 +49,6 @@ const solution = (dirPath) => {
     maxBuffer: Infinity
   })
 
-  /**
-   * Process the output to get maps of hash, path and count, e.g.
-   * [ {
-   *   hash: '1f8ac10f23c5b5bc1167bda84b833e5c057a77d2',
-   *   path: './sample/b/c/file6.txt',
-   *   count: 4
-   * } ]
-   */
   const maps = shasums
     .split('\n')
     .filter(Boolean)
