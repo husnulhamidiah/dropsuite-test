@@ -11,32 +11,26 @@ const shasums = execSync(findCmd, {
   maxBuffer: Infinity
 })
 
-const [results, maps] = shasums
+const maps = shasums
   .split('\n')
   .filter(Boolean)
-  .reduce(([hashes, maps], item) => {
+  .reduce((maps, item) => {
     const [hash, path] = [
       item.substring(0, 40),
       item.substring(40).trim()
     ]
 
-    hashes.push(hash)
-    maps[hash] = path
+    const count = maps[hash] ? maps[hash].count + 1 : 1
+    maps[hash] = { path, count }
 
-    return [hashes, maps]
-  }, [[], {}])
+    return maps
+  }, {})
 
-const uniqHashes = [...new Set(results)]
-const topHash = uniqHashes.reduce(([acc, hash], item) => {
-  const counter = results.filter(result => result === item).length
-  if (counter >= acc) {
-    const [acc, hash] = [counter, item]
-    return [acc, hash]
-  }
-  return [acc, hash]
-}, [1, null])
+const top = Object.values(maps)
+  .sort((a, b) => b.count - a.count)
+  .shift()
 
-const stream = fs.createReadStream(maps[topHash.pop()], {
+const stream = fs.createReadStream(top.path, {
   encoding: 'utf8'
 })
 
@@ -45,5 +39,5 @@ stream.on('data', data => {
 })
 
 stream.on('close', () => {
-  console.log(topHash.pop())
+  console.log(top.count)
 })
