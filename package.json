@@ -4,8 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node -r esm index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Husnul Anwari <husnulhamidiah@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "esm": "^3.2.25"
+  }
 }
