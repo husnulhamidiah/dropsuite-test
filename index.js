@@ -10,8 +10,6 @@ const results = shasums.toString()
   .filter(Boolean)
   .map(item => item.substring(0, 40))
 
-console.log(results)
-
 const uniqHashes = [...new Set(results)]
 const topHash = uniqHashes.reduce(([acc, hash], item) => {
   const counter = results.filter(result => result === item).length
@@ -22,8 +20,6 @@ const topHash = uniqHashes.reduce(([acc, hash], item) => {
   return [acc, hash]
 }, [1, null])
 
-console.log(topHash)
-
 const grepShasums = execSync(`find ${dirPath} -type f -exec sha1sum {} \\; | grep ${topHash.pop()} `, {
   encoding: 'utf8',
   maxBuffer: Infinity
@@ -33,8 +29,6 @@ const finalPath = grepShasums.toString()
   .filter(Boolean)
   .map(item => item.substring(40).trim())
   .pop()
-
-console.log(finalPath)
 
 const stream = fs.createReadStream(finalPath, { encoding: 'utf8' })
 stream.on('data', data => {
