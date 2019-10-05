@@ -1,3 +1,4 @@
+import fs from 'fs'
 import { execSync } from 'child_process'
 
 const dirPath = process.argv.slice(2)
@@ -34,3 +35,11 @@ const finalPath = grepShasums.toString()
   .pop()
 
 console.log(finalPath)
+
+const stream = fs.createReadStream(finalPath, { encoding: 'utf8' })
+stream.on('data', data => {
+  console.log(data)
+})
+stream.on('close', () => {
+  console.log(topHash.pop())
+})
