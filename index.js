@@ -10,3 +10,15 @@ const results = shasums.toString()
   .map(item => item.substring(0, 40))
 
 console.log(results)
+
+const uniqHashes = [...new Set(results)]
+const topHash = uniqHashes.reduce(([acc, hash], item) => {
+  const counter = results.filter(result => result === item).length
+  if (counter >= acc) {
+    const [acc, hash] = [counter, item]
+    return [acc, hash]
+  }
+  return [acc, hash]
+}, [1, null])
+
+console.log(topHash)
